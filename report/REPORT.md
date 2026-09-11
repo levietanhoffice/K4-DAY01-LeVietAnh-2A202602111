@@ -595,72 +595,9 @@ Nguồn evidence: `segmentation_predictions.json` và `visuals/segmentation_pred
 
 | Tác vụ | Đơn vị/định dạng ground truth | Lỗi hoặc điểm mơ hồ quan sát được | Annotator làm gì? | Reviewer xem gì? |
 | ---   | --- | --- | --- | --- |
-| Phân loại ảnh | - Chuỗi nhãn / Category ID đơn lẻ hoặc đa nhãn (Multi-label).
-
-
-- Định dạng: CSV, JSON ({"image_id": ..., "labels": [...]}), hoặc cấu trúc thư mục dạng tên class (dataset/train/<class_name>/). | - Ảnh chứa nhiều đối tượng thuộc các nhãn khác nhau nhưng chỉ được gán single-label (không rõ chủ thể chính).
-
-
-- Đối tượng chính quá nhỏ, nằm ngoài rìa hoặc bị chìm vào nền.
-
-
-- Các lớp dễ gây nhầm lẫn ngữ nghĩa (ví dụ: sedan vs. hatchback, báo đốm vs. báo hoa mai). | - Nhận diện đối tượng trọng tâm chiếm ưu thế trong ảnh.
-
-
-- Chọn 1 hoặc nhiều nhãn phù hợp từ danh mục taxonomy có sẵn.
-
-
-- Gắn cờ (flag/escalate) nếu ảnh bị hỏng, quá tối, hoặc không thể xác định chủ thể. | - Tính chính xác của nhãn so với taxonomy và guideline ngữ nghĩa.
-
-
-- Tính nhất quán giữa các annotator đối với các ca biên (edge cases).
-
-
-- Kiểm tra xem annotator có nhầm lẫn giữa nhãn chủ thể chính và vật thể phụ ở hậu cảnh hay không. |
-| Phát hiện vật thể | - Tọa độ Bounding Box 2D dạng hình chữ nhật trục thẳng đứng.
-
-
-- Định dạng phổ biến: COCO ([x_min, y_min, width, height]), YOLO ([class_id, x_center, y_center, w, h] chuẩn hóa 0–1), hoặc Pascal VOC ([xmin, ymin, xmax, ymax]). | - Box quá rộng làm thừa nền hoặc box quá chật cắt lẹm vào chi tiết vật thể.
-
-
-- Đóng khung cả bóng đổ hoặc hình ảnh phản chiếu qua gương.
-
-
-- Bỏ sót đối tượng nhỏ/ở xa hoặc vẽ trùng nhiều box đè lên cùng 1 đối tượng.
-
-
-- Không rõ quy tắc vẽ khi vật thể bị che khuất chia làm 2 khúc (vẽ 1 box to hay 2 box con). | - Kéo thả khung chữ nhật bao trùm toàn bộ pixel nhìn thấy được của từng thực thể.
-
-
-- Gán đúng nhãn (class_id) cho từng box.
-
-
-- Xóa bỏ box thừa, tách các box bị dính chùm.
-
-
-- Tuân thủ quy tắc đóng khung vùng thực tế nhìn thấy (visible) hay ước lượng toàn phần (amodal). | - Độ khít của box,IoU với ground truth chuẩn, sai số pixel biên (1–2 px).- Độ bao phủ (Coverage/Recall): kiểm tra xem có vật thể nào bị annotator bỏ sót không.- Kiểm tra lỗi dương tính giả (vẽ box vào bóng râm, tranh ảnh trên tường, vệt sáng).- Đúng nhãn phân loại của từng box. |
-| Instance segmentation | - Tập hợp tọa độ đỉnh đa giác (Polygon vertices: [[x1, y1, x2, y2, ...]]) hoặc mặt nạ nhị phân mã hóa RLE (Run-Length Encoding).
-
-
-- Kèm theo instance_id duy nhất cho từng cá thể. | - Đường biên răng cưa, thiếu điểm neo ở các đoạn cong hoặc thừa điểm không cần thiết trên cạnh thẳng.
-
-
-- Bỏ qua các khoảng rỗng nội tại (không đục lỗ khoảng trống giữa tay và thân người, nan hoa xe).
-
-
-- Hai mask của 2 đối tượng đứng cạnh nhau bị chồng lấn pixel (overlap) hoặc để hở rãnh nền.
-
-
-- Biên mờ/nhòe (motion blur) hoặc cấu trúc dạng sợi (tóc, cành lá) khó chốt ranh giới. | - Chấm các điểm đỉnh tạo polygon ôm sát ranh giới pixel của từng đối tượng riêng biệt.
-
-
-- Vẽ các vòng đa giác trong (interior rings) để đục lỗ các khoảng rỗng bên trong.
-
-
-- Gán instance_id riêng biệt cho từng đối tượng; gán chung một instance_id cho các mảng rời rạc thuộc cùng 1 vật thể bị vật khác chắn ngang.
-
-
-- Đảm bảo không để pixel chồng lấn sang cá thể bên cạnh. | - Độ chuẩn xác của biên mask (Boundary IoU / Boundary F1-score), kiểm tra dưới độ zoom cao (300%).- Độ sạch của các khoảng rỗng (đã đục lỗ đầy đủ chưa).- Tính duy nhất và liên kết của instance_id (đặc biệt ở các vật thể bị chia cắt thành nhiều phần).- Phân xử quyền sở hữu pixel tại các ranh giới tiếp xúc sát nhau (không bị overlap). |
+| Phân loại ảnh | - Chuỗi nhãn / Category ID đơn lẻ hoặc đa nhãn (Multi-label). - Định dạng: CSV, JSON ({"image_id": ..., "labels": [...]}), hoặc cấu trúc thư mục dạng tên class (dataset/train/<class_name>/). | - Ảnh chứa nhiều đối tượng thuộc các nhãn khác nhau nhưng chỉ được gán single-label (không rõ chủ thể chính). - Đối tượng chính quá nhỏ, nằm ngoài rìa hoặc bị chìm vào nền. - Các lớp dễ gây nhầm lẫn ngữ nghĩa (ví dụ: sedan vs. hatchback, báo đốm vs. báo hoa mai). | - Nhận diện đối tượng trọng tâm chiếm ưu thế trong ảnh. - Chọn 1 hoặc nhiều nhãn phù hợp từ danh mục taxonomy có sẵn. - Gắn cờ (flag/escalate) nếu ảnh bị hỏng, quá tối, hoặc không thể xác định chủ thể. | - Tính chính xác của nhãn so với taxonomy và guideline ngữ nghĩa. - Tính nhất quán giữa các annotator đối với các ca biên (edge cases). - Kiểm tra xem annotator có nhầm lẫn giữa nhãn chủ thể chính và vật thể phụ ở hậu cảnh hay không. |
+| Phát hiện vật thể | - Tọa độ Bounding Box 2D dạng hình chữ nhật trục thẳng đứng. - Định dạng phổ biến: COCO ([x_min, y_min, width, height]), YOLO ([class_id, x_center, y_center, w, h] chuẩn hóa 0–1), hoặc Pascal VOC ([xmin, ymin, xmax, ymax]). | - Box quá rộng làm thừa nền hoặc box quá chật cắt lẹm vào chi tiết vật thể. - Đóng khung cả bóng đổ hoặc hình ảnh phản chiếu qua gương. - Bỏ sót đối tượng nhỏ/ở xa hoặc vẽ trùng nhiều box đè lên cùng 1 đối tượng. - Không rõ quy tắc vẽ khi vật thể bị che khuất chia làm 2 khúc (vẽ 1 box to hay 2 box con). | - Kéo thả khung chữ nhật bao trùm toàn bộ pixel nhìn thấy được của từng thực thể. - Gán đúng nhãn (class_id) cho từng box. - Xóa bỏ box thừa, tách các box bị dính chùm. - Tuân thủ quy tắc đóng khung vùng thực tế nhìn thấy (visible) hay ước lượng toàn phần (amodal). | - Độ khít của box,IoU với ground truth chuẩn, sai số pixel biên (1–2 px).- Độ bao phủ (Coverage/Recall): kiểm tra xem có vật thể nào bị annotator bỏ sót không.- Kiểm tra lỗi dương tính giả (vẽ box vào bóng râm, tranh ảnh trên tường, vệt sáng).- Đúng nhãn phân loại của từng box. |
+| Instance segmentation | - Tập hợp tọa độ đỉnh đa giác (Polygon vertices: [[x1, y1, x2, y2, ...]]) hoặc mặt nạ nhị phân mã hóa RLE (Run-Length Encoding). - Kèm theo instance_id duy nhất cho từng cá thể. | - Đường biên răng cưa, thiếu điểm neo ở các đoạn cong hoặc thừa điểm không cần thiết trên cạnh thẳng. - Bỏ qua các khoảng rỗng nội tại (không đục lỗ khoảng trống giữa tay và thân người, nan hoa xe). - Hai mask của 2 đối tượng đứng cạnh nhau bị chồng lấn pixel (overlap) hoặc để hở rãnh nền. - Biên mờ/nhòe (motion blur) hoặc cấu trúc dạng sợi (tóc, cành lá) khó chốt ranh giới. | - Chấm các điểm đỉnh tạo polygon ôm sát ranh giới pixel của từng đối tượng riêng biệt. - Vẽ các vòng đa giác trong (interior rings) để đục lỗ các khoảng rỗng bên trong. - Gán instance_id riêng biệt cho từng đối tượng; gán chung một instance_id cho các mảng rời rạc thuộc cùng 1 vật thể bị vật khác chắn ngang. - Đảm bảo không để pixel chồng lấn sang cá thể bên cạnh. | - Độ chuẩn xác của biên mask (Boundary IoU / Boundary F1-score), kiểm tra dưới độ zoom cao (300%).- Độ sạch của các khoảng rỗng (đã đục lỗ đầy đủ chưa).- Tính duy nhất và liên kết của instance_id (đặc biệt ở các vật thể bị chia cắt thành nhiều phần).- Phân xử quyền sở hữu pixel tại các ranh giới tiếp xúc sát nhau (không bị overlap). |
 
 ## 5. An toàn dữ liệu
 
